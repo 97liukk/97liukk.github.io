@@ -6,21 +6,21 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>我的第一篇博客 | 卡哇伊dekk的个人博客</title>
+  <title>虚拟内存管理 | 卡哇伊dekk的个人博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="操作系统实验三：虚拟内存管理报告姓名：刘灵 学号：201708010524 班级：计科1704 实验目的 了解虚拟内存的Page Fault异常处理实现 了解页替换算法在操作系统中的实现  实验内容 本次实验是在实验二的基础上，借助于页表机制和实验一中涉及的中断异常处理机制，完成Page Fault异常处理和FIFO页替换算法的实现，结合磁盘提供的缓存空间，从而能够支持虚存管理，提供一个比实际物理">
+  <meta name="description" content="实验目的 了解虚拟内存的Page Fault异常处理实现 了解页替换算法在操作系统中的实现">
 <meta property="og:type" content="article">
-<meta property="og:title" content="我的第一篇博客">
+<meta property="og:title" content="虚拟内存管理">
 <meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;12&#x2F;15&#x2F;%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%B8%89%EF%BC%9A%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%8A%A5%E5%91%8A&#x2F;index.html">
 <meta property="og:site_name" content="卡哇伊dekk的个人博客">
-<meta property="og:description" content="操作系统实验三：虚拟内存管理报告姓名：刘灵 学号：201708010524 班级：计科1704 实验目的 了解虚拟内存的Page Fault异常处理实现 了解页替换算法在操作系统中的实现  实验内容 本次实验是在实验二的基础上，借助于页表机制和实验一中涉及的中断异常处理机制，完成Page Fault异常处理和FIFO页替换算法的实现，结合磁盘提供的缓存空间，从而能够支持虚存管理，提供一个比实际物理">
+<meta property="og:description" content="实验目的 了解虚拟内存的Page Fault异常处理实现 了解页替换算法在操作系统中的实现">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="d:%5CTypora%5Cucore_lab%5Clab3%5C1.png">
 <meta property="og:image" content="d:&#x2F;Typora&#x2F;ucore_lab&#x2F;lab3&#x2F;2.png">
 <meta property="og:image" content="d:&#x2F;Typora&#x2F;ucore_lab&#x2F;lab3&#x2F;3.png">
 <meta property="og:image" content="d:&#x2F;Typora&#x2F;ucore_lab&#x2F;lab3&#x2F;4.png">
 <meta property="article:published_time" content="2019-12-15T12:04:11.000Z">
-<meta property="article:modified_time" content="2019-12-15T12:05:08.667Z">
+<meta property="article:modified_time" content="2019-12-15T12:25:22.821Z">
 <meta property="article:author" content="Liu Ling">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="d:%5CTypora%5Cucore_lab%5Clab3%5C1.png">
@@ -166,7 +166,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      我的第一篇博客
+      虚拟内存管理
     </h1>
   
 
@@ -179,13 +179,12 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="操作系统实验三：虚拟内存管理报告"><a href="#操作系统实验三：虚拟内存管理报告" class="headerlink" title="操作系统实验三：虚拟内存管理报告"></a>操作系统实验三：虚拟内存管理报告</h1><p><em>姓名：刘灵</em></p>
-<p><em>学号：201708010524</em></p>
-<p><em>班级：计科1704</em></p>
-<h2 id="实验目的"><a href="#实验目的" class="headerlink" title="实验目的"></a>实验目的</h2><ul>
+        <h2 id="实验目的"><a href="#实验目的" class="headerlink" title="实验目的"></a>实验目的</h2><ul>
 <li>了解虚拟内存的Page Fault异常处理实现</li>
 <li>了解页替换算法在操作系统中的实现</li>
 </ul>
+<a id="more"></a>
+
 <h2 id="实验内容"><a href="#实验内容" class="headerlink" title="实验内容"></a>实验内容</h2><p> 本次实验是在实验二的基础上，借助于页表机制和实验一中涉及的中断异常处理机制，完成Page Fault异常处理和FIFO页替换算法的实现，结合磁盘提供的缓存空间，从而能够支持虚存管理，提供一个比实际物理内存空间“更大”的虚拟内存空间给系统使用。这个实验与实际操作系统中的实现比较起来要简单，不过需要了解实验一和实验二的具体实现。实际操作系统系统中的虚拟内存管理设计与实现是相当复杂的，涉及到与进程管理系统、文件系统等的交叉访问。</p>
 <h3 id="练习0：填写已有实验"><a href="#练习0：填写已有实验" class="headerlink" title="练习0：填写已有实验"></a>练习0：填写已有实验</h3><blockquote>
 <p> 本实验依赖实验1/2。请把你做的实验1/2的代码填入本实验中代码中有“LAB1”,“LAB2”的注释相应部分。 </p>
